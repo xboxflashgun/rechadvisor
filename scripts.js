@@ -20,7 +20,8 @@ function main() {
 
 	for(var i=0; i < MAXNUM; i++)	{
 
-		boxes.append('div').attr('id', 'num'+i).text( 'Num=' + (i+1) );
+		var div = boxes.append('div').attr('id', 'num'+i).text( 'Num=' + (i+1) );
+		fill_boxes(div, i);
 		// adding style to global style table
 		d3.select('head').append('style').text(`#boxes input[value="${i}"]:not(:checked) ~ #num${i} { display: none }`);
 
@@ -29,6 +30,40 @@ function main() {
 	draw_log();
 
 }
+
+function fill_boxes(boxes, n) {
+
+	fetch("api/getcsv.php?f=getboxes&n=" + n)
+	.then(res => res.text())
+	.then(res => {
+
+		var devs = [];
+		res.split('\n').forEach( s => {
+
+			if(s.length === 0)
+				return;
+
+			var row = s.split('\t');
+
+			if(row[0] !== '\\N')	{
+	
+				var batch = [];
+				for(var i=0; i <= n; i ++)
+					batch.push( { accid: row[i*3 + 1], box: row[i*3+2], cap: row[i*3+3] } );
+
+				devs.push(batch);
+			
+			}
+			
+		});
+
+		console.log(n, devs);
+		boxes.text(n + ' ' + devs.length);
+
+	});
+
+}
+
 
 function save_acc()	{
 
@@ -61,7 +96,6 @@ function draw_log()	{
 			log.push(t);
 
 		});
-		console.log(log);
 		d3.select("#log")
 		.selectAll('tr')
 		.data(log)
