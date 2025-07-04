@@ -1,0 +1,73 @@
+function main() {
+
+	d3.select('#charged input[type="submit"]').on('click', () => {
+
+		save_acc();
+
+	});
+
+	draw_log();
+
+}
+
+function save_acc()	{
+
+	var acc = d3.select('#charged input[name="accid"]').property("value");
+	var vol = d3.select('#charged input[name="volume"]').property("value");
+	var box = d3.select('#charged input[name="box"]').property("value").toUpperCase();
+	
+	fetch(`api/getcsv.php?f=addcharged&accid=${acc}&volume=${vol}&box=${box}`)
+	.then( res => res.text() )
+	.then( res => {
+
+		draw_log();
+
+	});
+
+}
+
+function draw_log()	{
+
+	fetch("api/getcsv.php?f=getlog")
+	.then( res => res.text() )
+	.then( res => {
+
+		var log = [];
+		res.split('\n').forEach( s => {
+
+			if(s.length === 0)
+				return;
+			var t = s.split('\t');
+			log.push(t);
+
+		});
+		console.log(log);
+		d3.select("#log")
+		.selectAll('tr')
+		.data(log)
+		.join( enter => {
+
+			var tr = enter.append('tr');
+
+			tr.append('td').text(d => d[0]);
+			tr.append('td').text(d => d[2]);
+			tr.append('td').text(d => d[1]);
+			tr.append('td').text(d => d[3]);
+
+		}, update => {
+
+			update.select("td:nth-child(1)").text(d => d[0]);
+			update.select("td:nth-child(2)").text(d => d[2]);
+			update.select("td:nth-child(3)").text(d => d[1]);
+			update.select("td:nth-child(4)").text(d => d[3]);
+
+		}, exit => {
+
+			exit.remove();
+
+		});
+
+	});
+
+}
+

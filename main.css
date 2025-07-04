@@ -1,0 +1,33 @@
+body {
+    font-family: Roboto,Helvetica Neue,Arial,sans-serif;
+    font-size: 14px;
+    width: 1440px;
+    margin: auto;
+    color: #000;
+    background-color: #ccc;
+}
+
+th {
+	padding: 0px 6px;
+}
+
+#log td {
+	text-align: right;
+}
+
+#boxes input[value="0"]:not(:checked) ~ #num0 {
+	display: none;
+}
+
+#boxes input[value="1"]:not(:checked) ~ #num1 {
+	display: none;
+}
+
+#boxes input[value="2"]:not(:checked) ~ #num2 {
+	display: none;
+}
+
+#boxes input[value="3"]:not(:checked) ~ #num3 {
+	display: none;
+}
+
