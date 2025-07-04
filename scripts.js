@@ -6,6 +6,26 @@ function main() {
 
 	});
 
+	var MAXNUM = 4;		// maximum number of batteries in one device
+
+	var boxes = d3.select("#boxes");
+	for(var i=0; i < MAXNUM; i++)	{
+
+		boxes.append('input')
+			.attr('type', 'radio').attr('name', 'number').attr('value', i)
+		boxes.append('label').text(i + 1);
+
+	}
+	boxes.select('input[value="1"]').attr('checked', true);		// 2 batteries in device is a default
+
+	for(var i=0; i < MAXNUM; i++)	{
+
+		boxes.append('div').attr('id', 'num'+i).text( 'Num=' + (i+1) );
+		// adding style to global style table
+		d3.select('head').append('style').text(`#boxes input[value="${i}"]:not(:checked) ~ #num${i} { display: none }`);
+
+	}
+
 	draw_log();
 
 }

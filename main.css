@@ -15,19 +15,3 @@ th {
 	text-align: right;
 }
 
-#boxes input[value="0"]:not(:checked) ~ #num0 {
-	display: none;
-}
-
-#boxes input[value="1"]:not(:checked) ~ #num1 {
-	display: none;
-}
-
-#boxes input[value="2"]:not(:checked) ~ #num2 {
-	display: none;
-}
-
-#boxes input[value="3"]:not(:checked) ~ #num3 {
-	display: none;
-}
-
