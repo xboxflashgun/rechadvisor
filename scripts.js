@@ -1,10 +1,6 @@
 function main() {
 
-	d3.select('#charged input[type="submit"]').on('click', () => {
-
-		save_acc();
-
-	});
+	d3.select('#charged input[type="submit"]').on('click', () => save_acc() );
 
 	var MAXNUM = 4;		// maximum number of batteries in one device
 
@@ -18,16 +14,57 @@ function main() {
 	}
 	boxes.select('input[value="1"]').attr('checked', true);		// 2 batteries in device is a default
 
-	for(var i=0; i < MAXNUM; i++)	{
+	for(var i = 0; i < MAXNUM; i++)	{
 
-		var div = boxes.append('div').attr('id', 'num'+i).text( 'Num=' + (i+1) );
+		var div = boxes.append('div').attr('id', 'num'+i);		// .text( 'Num=' + (i+1) );
 		fill_boxes(div, i);
 		// adding style to global style table
 		d3.select('head').append('style').text(`#boxes input[value="${i}"]:not(:checked) ~ #num${i} { display: none }`);
 
 	}
 
+	draw_devices();
+
+	d3.select('#devlist input[type="submit"]').on('click', () => {
+
+		add_device();
+
+	});
+
 	draw_log();
+
+}
+
+function to64(str)	{
+
+
+	return btoa( String.fromCodePoint(...new TextEncoder().encode(str)));
+
+}
+
+function from64(str) {
+
+	return new TextDecoder().decode(Uint8Array.from(atob(str), (m) => m.codePointAt(0)));
+
+}
+
+function add_device()	{
+
+	var dev = d3.select('#devlist input[name="newdev"]').property("value");
+	var num = d3.select('#boxes input[name="number"]:checked').property("value");
+
+	console.log(num, to64(dev));	// , decode(encode(dev)));
+	console.log(from64(to64(dev)));
+
+	fetch(`api/getcsv.php?f=adddevice&num=${num}&dev=${to64(dev)}`)
+		.then( res => res.text() )
+		.then( res => location.reload() );
+
+}
+
+function draw_devices()	{
+
+	
 
 }
 
@@ -48,8 +85,8 @@ function fill_boxes(boxes, n) {
 			if(row[0] !== '\\N')	{
 	
 				var batch = [];
-				for(var i=0; i <= n; i ++)
-					batch.push( { accid: row[i*3 + 1], box: row[i*3+2], cap: row[i*3+3] } );
+				for(var i = 0; i <= n; i ++)
+					batch.push( { accid: row[i*3 + 1], box: row[i*3+2], cap: +row[i*3+3] } );
 
 				devs.push(batch);
 			
@@ -57,8 +94,35 @@ function fill_boxes(boxes, n) {
 			
 		});
 
-		console.log(n, devs);
-		boxes.text(n + ' ' + devs.length);
+		var table = boxes.append('table');
+		var thead = table.append('thead');
+
+		thead.append('th').text('Delta');
+		for(var j = 0; j <= n; j++)	{
+
+			thead.append('th').text('Id');
+			thead.append('th').text('Box');
+			thead.append('th').text('Cap');
+
+		}
+
+		var tbody = table.append('tbody');
+
+		for(var i = 0; i != devs.length; i++)	{
+
+			var tr = tbody.append('tr');
+			var delta = devs[i][n].cap - devs[i][0].cap;
+			tr.append('th').text(delta);
+
+			for(var j = 0; j <= n; j++)	{
+
+				tr.append('td').text(devs[i][j].accid);
+				tr.append('td').text(devs[i][j].box);
+				tr.append('td').text(devs[i][j].cap);
+
+			}
+
+		}
 
 	});
 
@@ -75,7 +139,7 @@ function save_acc()	{
 	.then( res => res.text() )
 	.then( res => {
 
-		draw_log();
+		location.reload();
 
 	});
 

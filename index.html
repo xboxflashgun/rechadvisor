@@ -4,26 +4,39 @@
 <title>xboxstat.com - Test Link</title>
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.png" />
 <meta name="robots" content="noindex,nofollow">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.png" />
 <link rel="stylesheet" type="text/css" href="main.css">
 <script src="/d3.v7.min.js"></script>
 <script src="scripts.js"></script>
 </head>
 <body onload="main()">
-	<h2>Just Charged</h2>
-	<div id="charged">
-		Acc #: <input type="number" name="accid" min="1" /><br>
-		Capacity: <input type="number" name="volume" /><br/>
-		Put to Box: <input type="text" name="box" /><br>
-		<input type="submit" value="Ok" />
+	
+	<h3>Just Charged</h3>
+	<table id="charged"><tbody>
+		<tr><th>Acc Id</th><td><input type="number" name="accid" min="1" size="5" /></td></tr>
+		<tr><th>Capacity</th><td><input type="number" name="volume" size="5" /></td></tr>
+		<tr><th>To Box</th><td><input type="text" name="box" size="5" /></td></tr>
+		<tr><th colspan="2"><input type="submit" value="Ok" /></th>
+	</tbody></table>
+	
+	<h3>Put to device</h3>
+	<div id="boxes">
 	</div>
-	<h2>Log</h2>
+
+	<h3>Add device with <span id="batnum"></span>batteries</h3>
+	<div id="devlist">
+		Name: <input type="text" name="newdev" size="20" />
+		<input type="submit" value="Ok" />
+		<table><thead>
+				<tr><th>Name</th></tr>
+			</thead><tbody>
+		</tbody></table>
+	</div>
+
+	<h3>Log</h3>
 	<table><thead><tr><th>AccId</th><th>Box</th><th>Capacity</th><th>Charge date</th></tr></thead>
 		<tbody id="log"></tbody>
 	</table>
-	<h2>Put to device</h2>
-	<div id="boxes">
-	</div>
-	<h2>Boxes</h2>
 </body>
 </html>
 

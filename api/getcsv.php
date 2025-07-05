@@ -6,7 +6,7 @@ header("Cache-control: private");
 foreach ($_GET as $k => $v)     {
 
 	if(preg_match('/[^0-9a-z_-]/', $k) ||
-		preg_match('/[^0-9A-Za-z \/=-]/', $v))
+		preg_match('/[^0-9A-Za-z =\/\-\+]/', $v))
 
 		die("Oops: $k, $v");
 
@@ -28,6 +28,16 @@ header("Cache-control: max-age=$timeout");
 echo $rep;
 
 // usage: GET http://host/api/getcsv.php?f=func&par=parameters
+
+function adddevice()	{
+
+	global $db;
+	$dev = $_GET['dev'];
+	$num = $_GET['num'];
+
+	pg_query_params($db, 'insert into places(num,place) values($1,$2) on conflict do nothing', array($num, $dev));
+
+}
 
 function getplace($place)	{
 
@@ -56,11 +66,11 @@ function addcharged()	{
 	$accid = $_GET['accid'];
 	$vol = $_GET['volume'];
 	$box = $_GET['box'];
-	pg_query_params("
+	pg_query_params($db, '
 		insert into vollog(vdate,accid,volume,box) 
 		values(now(), $1, $2, $3)
 		on conflict(vdate,accid) do update set volume=$2,box=$3
-	", array($accid, $vol, $box));
+	', array($accid, $vol, $box));
 
 }
 
