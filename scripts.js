@@ -1,8 +1,8 @@
+var MAXNUM = 4;		// maximum number of batteries in one device
+
 function main() {
 
 	d3.select('#charged input[type="submit"]').on('click', () => save_acc() );
-
-	var MAXNUM = 4;		// maximum number of batteries in one device
 
 	var boxes = d3.select("#boxes");
 	for(var i=0; i < MAXNUM; i++)	{
@@ -14,14 +14,20 @@ function main() {
 	}
 	boxes.select('input[value="1"]').attr('checked', true);		// 2 batteries in device is a default
 
+	boxes.selectAll("input").on('change', function(e) {
+		switch_tab();
+	});
+
+	var proms = [];
 	for(var i = 0; i < MAXNUM; i++)	{
 
-		var div = boxes.append('div').attr('id', 'num'+i);		// .text( 'Num=' + (i+1) );
-		fill_boxes(div, i);
-		// adding style to global style table
-		d3.select('head').append('style').text(`#boxes input[value="${i}"]:not(:checked) ~ #num${i} { display: none }`);
+		var div = boxes.append('div').classed('num'+i, true);		// .text( 'Num=' + (i+1) );
+		proms.push(fill_boxes(div, i));
+		d3.select("#batnum").append('span').classed('num'+i, true).text(i+1);
 
 	}
+
+	Promise.all(proms).then( () => switch_tab() );
 
 	draw_devices();
 
@@ -35,17 +41,22 @@ function main() {
 
 }
 
-function to64(str)	{
+function switch_tab()	{
 
+	var num = +d3.select('#boxes input[name="number"]:checked').property("value");
 
-	return btoa( String.fromCodePoint(...new TextEncoder().encode(str)));
+	for(var i = 0; i < MAXNUM; i++)
+		d3.selectAll('.num' + i).classed('hidden', i !== num);
 
 }
 
+
+function to64(str)	{
+	return btoa( String.fromCodePoint(...new TextEncoder().encode(str)));
+}
+
 function from64(str) {
-
 	return new TextDecoder().decode(Uint8Array.from(atob(str), (m) => m.codePointAt(0)));
-
 }
 
 function add_device()	{
@@ -70,7 +81,7 @@ function draw_devices()	{
 
 function fill_boxes(boxes, n) {
 
-	fetch("api/getcsv.php?f=getboxes&n=" + n)
+	return fetch("api/getcsv.php?f=getboxes&n=" + n)
 	.then(res => res.text())
 	.then(res => {
 
